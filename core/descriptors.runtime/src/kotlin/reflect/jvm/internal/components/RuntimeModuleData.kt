@@ -34,10 +34,7 @@ import org.jetbrains.kotlin.load.java.lazy.JavaResolverSettings
 import org.jetbrains.kotlin.load.java.lazy.LazyJavaPackageFragmentProvider
 import org.jetbrains.kotlin.load.java.lazy.SingleModuleClassResolver
 import org.jetbrains.kotlin.load.java.typeEnhancement.SignatureEnhancement
-import org.jetbrains.kotlin.load.kotlin.BinaryClassAnnotationAndConstantLoaderImpl
-import org.jetbrains.kotlin.load.kotlin.DeserializationComponentsForJava
-import org.jetbrains.kotlin.load.kotlin.DeserializedDescriptorResolver
-import org.jetbrains.kotlin.load.kotlin.JavaClassDataFinder
+import org.jetbrains.kotlin.load.kotlin.*
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.jvm.JavaDescriptorResolver
 import org.jetbrains.kotlin.serialization.deserialization.ContractDeserializer
@@ -48,7 +45,7 @@ import org.jetbrains.kotlin.utils.Jsr305State
 
 class RuntimeModuleData private constructor(
     val deserialization: DeserializationComponents,
-    val packagePartProvider: RuntimePackagePartProvider
+    val packagePartScopeCache: PackagePartScopeCache
 ) {
     val module: ModuleDescriptor get() = deserialization.moduleDescriptor
 
@@ -61,25 +58,23 @@ class RuntimeModuleData private constructor(
             val reflectKotlinClassFinder = ReflectKotlinClassFinder(classLoader)
             val deserializedDescriptorResolver = DeserializedDescriptorResolver()
             val singleModuleClassResolver = SingleModuleClassResolver()
-            val runtimePackagePartProvider = RuntimePackagePartProvider(classLoader)
-            val javaResolverCache = JavaResolverCache.EMPTY
             val notFoundClasses = NotFoundClasses(storageManager, module)
             val annotationTypeQualifierResolver = AnnotationTypeQualifierResolver(storageManager, Jsr305State.DISABLED)
-            val globalJavaResolverContext = JavaResolverComponents(
+            val javaResolverComponents = JavaResolverComponents(
                 storageManager, ReflectJavaClassFinder(classLoader), reflectKotlinClassFinder, deserializedDescriptorResolver,
-                SignaturePropagator.DO_NOTHING, RuntimeErrorReporter, javaResolverCache,
+                SignaturePropagator.DO_NOTHING, RuntimeErrorReporter, JavaResolverCache.EMPTY,
                 JavaPropertyInitializerEvaluator.DoNothing, SamConversionResolver.Empty, RuntimeSourceElementFactory,
-                singleModuleClassResolver, runtimePackagePartProvider, SupertypeLoopChecker.EMPTY, LookupTracker.DO_NOTHING, module,
+                singleModuleClassResolver, PackagePartProvider.Empty, SupertypeLoopChecker.EMPTY, LookupTracker.DO_NOTHING, module,
                 ReflectionTypes(module, notFoundClasses), annotationTypeQualifierResolver,
                 SignatureEnhancement(annotationTypeQualifierResolver, Jsr305State.DISABLED),
                 JavaClassesTracker.Default, JavaResolverSettings.Default
             )
 
-            val lazyJavaPackageFragmentProvider = LazyJavaPackageFragmentProvider(globalJavaResolverContext)
+            val lazyJavaPackageFragmentProvider = LazyJavaPackageFragmentProvider(javaResolverComponents)
 
             builtIns.initialize(module, isAdditionalBuiltInsFeatureSupported = true)
 
-            val javaDescriptorResolver = JavaDescriptorResolver(lazyJavaPackageFragmentProvider, javaResolverCache)
+            val javaDescriptorResolver = JavaDescriptorResolver(lazyJavaPackageFragmentProvider, JavaResolverCache.EMPTY)
             val javaClassDataFinder = JavaClassDataFinder(reflectKotlinClassFinder, deserializedDescriptorResolver)
             val binaryClassAnnotationAndConstantLoader = BinaryClassAnnotationAndConstantLoaderImpl(
                 module, notFoundClasses, storageManager, reflectKotlinClassFinder
@@ -96,7 +91,10 @@ class RuntimeModuleData private constructor(
             module.setDependencies(module, builtIns.builtInsModule)
             module.initialize(javaDescriptorResolver.packageFragmentProvider)
 
-            return RuntimeModuleData(deserializationComponentsForJava.components, runtimePackagePartProvider)
+            return RuntimeModuleData(
+                deserializationComponentsForJava.components,
+                PackagePartScopeCache(deserializedDescriptorResolver, reflectKotlinClassFinder)
+            )
         }
     }
 }
