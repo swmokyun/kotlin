@@ -183,19 +183,19 @@ fun IrBuilderWithScope.irNull() =
 
 fun IrBuilderWithScope.irEqualsNull(argument: IrExpression) =
     primitiveOp2(
-        startOffset, endOffset, context.irBuiltIns.eqeqSymbol, IrStatementOrigin.EQEQ,
+        startOffset, endOffset, context.irBuiltIns.eqeqSymbol, context.irBuiltIns.booleanType, IrStatementOrigin.EQEQ,
         argument, irNull()
     )
 
 fun IrBuilderWithScope.irEquals(arg1: IrExpression, arg2: IrExpression, origin: IrStatementOrigin = IrStatementOrigin.EQEQ) =
     primitiveOp2(
-        startOffset, endOffset, context.irBuiltIns.eqeqSymbol, origin,
+        startOffset, endOffset, context.irBuiltIns.eqeqSymbol, context.irBuiltIns.booleanType, origin,
         arg1, arg2
     )
 
 fun IrBuilderWithScope.irNotEquals(arg1: IrExpression, arg2: IrExpression) =
     primitiveOp1(
-        startOffset, endOffset, context.irBuiltIns.booleanNotSymbol, IrStatementOrigin.EXCLEQ,
+        startOffset, endOffset, context.irBuiltIns.booleanNotSymbol, context.irBuiltIns.booleanType, IrStatementOrigin.EXCLEQ,
         irEquals(arg1, arg2, origin = IrStatementOrigin.EXCLEQ)
     )
 

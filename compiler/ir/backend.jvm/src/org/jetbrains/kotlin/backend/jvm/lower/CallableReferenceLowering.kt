@@ -377,7 +377,7 @@ internal class CallableReferenceLowering(val context: JvmBackendContext) : FileL
                                 },
                                 irInt(unboundCalleeParameters.size)
                             ),
-                            irCall(context.irBuiltIns.illegalArgumentExceptionFun).apply {
+                            irCall(context.irBuiltIns.illegalArgumentExceptionSymbol).apply {
                                 putValueArgument(0, irString("Expected ${unboundCalleeParameters.size} arguments"))
                             }
                         )
@@ -408,7 +408,7 @@ internal class CallableReferenceLowering(val context: JvmBackendContext) : FileL
                                             )
                                             +irIfThen(
                                                 irNotIs(irGet(argValue), type),
-                                                irCall(context.irBuiltIns.illegalArgumentExceptionFun).apply {
+                                                irCall(context.irBuiltIns.illegalArgumentExceptionSymbol).apply {
                                                     putValueArgument(0, irString("Wrong type, expected $type"))
                                                 }
                                             )

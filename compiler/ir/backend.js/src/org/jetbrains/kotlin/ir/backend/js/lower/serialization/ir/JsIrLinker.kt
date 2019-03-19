@@ -10,8 +10,6 @@ import org.jetbrains.kotlin.backend.common.library.CombinedIrFileReader
 import org.jetbrains.kotlin.backend.common.library.DeclarationId
 import org.jetbrains.kotlin.backend.common.serialization.*
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
-import org.jetbrains.kotlin.backend.common.serialization.knownBuiltins
-import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.descriptors.IrBuiltIns
 import org.jetbrains.kotlin.ir.symbols.IrClassifierSymbol

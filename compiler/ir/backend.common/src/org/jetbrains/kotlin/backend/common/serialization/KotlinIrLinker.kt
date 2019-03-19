@@ -55,9 +55,8 @@ abstract class KotlinIrLinker(
     fun loadKnownBuiltinSymbols(): Long {
         var currentIndex = firstKnownBuiltinsIndex
         builtIns.knownBuiltins.forEach {
-            require(it is IrFunction)
-            deserializedSymbols.put(UniqIdKey(null, UniqId(currentIndex, isLocal = false)), it.symbol)
-            assert(symbolTable.referenceSimpleFunction(it.descriptor) == it.symbol)
+            deserializedSymbols.put(UniqIdKey(null, UniqId(currentIndex, isLocal = false)), it)
+            assert(symbolTable.referenceSimpleFunction(it.descriptor) == it)
             currentIndex++
         }
         return currentIndex
