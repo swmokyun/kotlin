@@ -2,7 +2,7 @@ FILE: nestedClass.kt
     public? abstract class Base : kotlin/Any {
         public? constructor(s: String): super<kotlin/Any>()
 
-        public? final? val s: String
+        public? final? val s: String = s#
             public? get(): String
 
     }

@@ -2,10 +2,10 @@ FILE: lambda.kt
     public? final? data class Tuple : kotlin/Any {
         public? constructor(x: Int, y: Int): super<kotlin/Any>()
 
-        public? final? val x: Int
+        public? final? val x: Int = x#
             public? get(): Int
 
-        public? final? val y: Int
+        public? final? val y: Int = y#
             public? get(): Int
 
     }

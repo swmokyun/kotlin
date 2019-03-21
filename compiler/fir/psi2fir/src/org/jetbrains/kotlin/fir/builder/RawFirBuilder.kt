@@ -278,7 +278,9 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                 receiverTypeRef = null,
                 returnTypeRef = type,
                 isVar = isMutable,
-                initializer = null,
+                initializer = FirQualifiedAccessExpressionImpl(session, this).apply {
+                    calleeReference = FirSimpleNamedReference(this@RawFirBuilder.session, this@toFirProperty, nameAsSafeName)
+                },
                 getter = FirDefaultPropertyGetter(session, this, type, visibility),
                 setter = FirDefaultPropertySetter(session, this, type, visibility),
                 delegate = null

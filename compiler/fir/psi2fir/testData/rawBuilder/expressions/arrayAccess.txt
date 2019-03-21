@@ -7,7 +7,7 @@ FILE: arrayAccess.kt
     public? final? class Wrapper : kotlin/Any {
         public? constructor(v: IntArray): super<kotlin/Any>()
 
-        public? final? val v: IntArray
+        public? final? val v: IntArray = v#
             public? get(): IntArray
 
     }
