@@ -55,7 +55,7 @@ internal fun IrModuleFragment.replaceUnboundSymbols(context: JsIrBackendContext)
     // TODO: ModuleGenerator::generateUnboundSymbolsAsDependencies(IRModuleFragment) is private function :/
     @Suppress("DEPRECATION")
     ExternalDependenciesGenerator(
-        descriptor,
+        descriptor, ///
         symbolTable = context.symbolTable,
         irBuiltIns = context.irBuiltIns
     ).generateUnboundSymbolsAsDependencies()
