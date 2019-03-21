@@ -275,6 +275,7 @@ abstract class KotlinIrLinker(
 
     private val reversedFileIndex = mutableMapOf<UniqIdKey, IrFile>()
 
+    @UseExperimental(DescriptorInIrDeclaration::class)
     private val UniqIdKey.moduleOfOrigin
         get() =
             this.moduleDescriptor ?: reversedFileIndex[this]?.packageFragmentDescriptor?.containingDeclaration
