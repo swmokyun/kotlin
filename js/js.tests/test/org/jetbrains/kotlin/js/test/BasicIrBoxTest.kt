@@ -6,10 +6,7 @@
 package org.jetbrains.kotlin.js.test
 
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
-import org.jetbrains.kotlin.ir.backend.js.CompilationMode
-import org.jetbrains.kotlin.ir.backend.js.KlibModuleRef
-import org.jetbrains.kotlin.ir.backend.js.TranslationResult
-import org.jetbrains.kotlin.ir.backend.js.compile
+import org.jetbrains.kotlin.ir.backend.js.*
 import org.jetbrains.kotlin.js.config.JSConfigurationKeys
 import org.jetbrains.kotlin.js.config.JsConfig
 import org.jetbrains.kotlin.js.facade.MainCallParameters
@@ -108,24 +105,29 @@ abstract class BasicIrBoxTest(
             if (!isMainModule) it.replace("_v5.js", "/") else it
         }
 
-        val result: TranslationResult = compile(
-            project = config.project,
-            files = filesToCompile,
-            configuration = config.configuration,
-            compileMode = if (isMainModule) CompilationMode.JS else CompilationMode.KLIB,
-            immediateDependencies = dependencies,
-            allDependencies = allDependencies,
-            outputKlibPath = actualOutputFile
-        )
+        if (isMainModule) {
+            val jsCode = compile(
+                project = config.project,
+                files = filesToCompile,
+                configuration = config.configuration,
+                immediateDependencies = dependencies,
+                allDependencies = allDependencies
+            )
 
-        val moduleName = config.configuration.get(CommonConfigurationKeys.MODULE_NAME) as String
-        val module = KlibModuleRef(moduleName, actualOutputFile)
-
-        compilationCache[outputFile.name.replace(".js", ".meta.js")] = module
-
-        if (result is TranslationResult.CompiledJsCode) {
-            val wrappedCode = wrapWithModuleEmulationMarkers(result.jsCode, moduleId = config.moduleId, moduleKind = config.moduleKind)
+            val wrappedCode = wrapWithModuleEmulationMarkers(jsCode, moduleId = config.moduleId, moduleKind = config.moduleKind)
             outputFile.write(wrappedCode)
+
+        } else {
+            val module = generateKLib(
+                project = config.project,
+                files = filesToCompile,
+                configuration = config.configuration,
+                immediateDependencies = dependencies,
+                allDependencies = allDependencies,
+                outputKlibPath = actualOutputFile
+            )
+
+            compilationCache[outputFile.name.replace(".js", ".meta.js")] = module
         }
     }
 

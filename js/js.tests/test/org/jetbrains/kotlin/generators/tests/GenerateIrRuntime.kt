@@ -12,8 +12,7 @@ import com.intellij.psi.PsiManager
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.config.*
-import org.jetbrains.kotlin.ir.backend.js.CompilationMode
-import org.jetbrains.kotlin.ir.backend.js.compile
+import org.jetbrains.kotlin.ir.backend.js.generateKLib
 import org.jetbrains.kotlin.js.config.JSConfigurationKeys
 import org.jetbrains.kotlin.js.test.JsIrTestRuntime
 import org.jetbrains.kotlin.psi.KtFile
@@ -57,11 +56,10 @@ fun main() {
 
 
     fun buildKlib(sources: List<String>, outputPath: String) {
-        compile(
+        generateKLib(
             project = environment.project,
             files = sources.map(::createPsiFile),
             configuration = buildConfiguration(environment),
-            compileMode = CompilationMode.KLIB,
             immediateDependencies = emptyList(),
             allDependencies = emptyList(),
             outputKlibPath = outputPath
