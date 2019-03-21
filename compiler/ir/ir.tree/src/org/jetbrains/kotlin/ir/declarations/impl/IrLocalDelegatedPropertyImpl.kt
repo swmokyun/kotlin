@@ -17,10 +17,7 @@
 package org.jetbrains.kotlin.ir.declarations.impl
 
 import org.jetbrains.kotlin.descriptors.VariableDescriptorWithAccessors
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
-import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.declarations.IrLocalDelegatedProperty
-import org.jetbrains.kotlin.ir.declarations.IrVariable
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
@@ -30,7 +27,7 @@ class IrLocalDelegatedPropertyImpl(
     startOffset: Int,
     endOffset: Int,
     origin: IrDeclarationOrigin,
-    override val descriptor: VariableDescriptorWithAccessors,
+    descriptor: VariableDescriptorWithAccessors,
     override val name: Name,
     override val type: IrType,
     override val isVar: Boolean
@@ -75,6 +72,8 @@ class IrLocalDelegatedPropertyImpl(
         this.setter = setter
     }
 
+    @DescriptorInIrDeclaration
+    override val descriptor = descriptor
     override lateinit var delegate: IrVariable
     override lateinit var getter: IrFunction
     override var setter: IrFunction? = null

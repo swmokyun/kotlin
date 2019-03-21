@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.descriptors.VariableDescriptorWithAccessors
 import org.jetbrains.kotlin.ir.types.IrType
 
 interface IrLocalDelegatedProperty : IrDeclarationWithName {
+    @DescriptorInIrDeclaration
     override val descriptor: VariableDescriptorWithAccessors
 
     val type: IrType

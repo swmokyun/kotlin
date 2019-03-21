@@ -68,6 +68,7 @@ class IrLazyClass(
 
     override val annotations: MutableList<IrCall> = arrayListOf()
 
+    @DescriptorInIrDeclaration
     override val descriptor: ClassDescriptor get() = symbol.descriptor
 
     override var thisReceiver: IrValueParameter? by lazyVar {
