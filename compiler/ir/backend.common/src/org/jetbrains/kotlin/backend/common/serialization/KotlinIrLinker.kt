@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.IrDeserializer
 import org.jetbrains.kotlin.ir.util.SymbolTable
+import org.jetbrains.kotlin.ir.util.descriptorWithoutAccessCheck
 import org.jetbrains.kotlin.ir.util.patchDeclarationParents
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.protobuf.ExtensionRegistryLite.newInstance
@@ -260,7 +261,7 @@ abstract class KotlinIrLinker(
         builtIns.knownBuiltins.forEach {
             require(it is IrFunction)
             deserializedSymbols[UniqIdKey(null, UniqId(currentIndex, isLocal = false))] = it.symbol
-            assert(symbolTable.referenceSimpleFunction(it.descriptor) == it.symbol)
+            assert(symbolTable.referenceSimpleFunction(it.descriptorWithoutAccessCheck as FunctionDescriptor) == it.symbol)
             currentIndex++
         }
         return currentIndex
