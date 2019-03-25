@@ -1,8 +1,19 @@
 import com.moowork.gradle.node.yarn.YarnTask
 
+description = "Simple Kotlin/JS tests runner with TeamCity reporter"
+
 plugins {
     id("base")
     id("com.moowork.node") version "1.2.0"
+}
+
+val default = configurations.getByName(Dependency.DEFAULT_CONFIGURATION)
+val archives = configurations.getByName(Dependency.ARCHIVES_CONFIGURATION)
+
+default.extendsFrom(archives)
+
+dependencies {
+    archives(project(":kotlin-test:kotlin-test-js"))
 }
 
 node {
@@ -26,7 +37,15 @@ tasks {
         args = listOf("build")
 
         inputs.dir(projectDir.resolve("src"))
-        outputs.file(projectDir.resolve("lib/kotlin-test-nodejs-runner.js"))
+        inputs.files(
+            projectDir.resolve("cli.ts"),
+            projectDir.resolve("nodejs-source-map-support.js"),
+            projectDir.resolve("package.json"),
+            projectDir.resolve("rollup.config.js"),
+            projectDir.resolve("tsconfig.json"),
+            projectDir.resolve("yarn.lock")
+        )
+        outputs.dir(projectDir.resolve("lib"))
     }
 
     create<Delete>("cleanYarn") {
@@ -42,8 +61,17 @@ tasks {
     getByName("clean").dependsOn("cleanYarn")
 }
 
+val zip = tasks.create<Zip>("zip") {
+    from(projectDir.resolve("lib"))
+}
+
 artifacts {
-    add("archives", projectDir.resolve("lib/kotlin-test-nodejs-runner.js")) {
-        builtBy("yarnBuild")
+    add(
+        "archives",
+        zip.archiveFile.get().asFile
+    ) {
+        builtBy(zip)
     }
 }
+
+publish()
