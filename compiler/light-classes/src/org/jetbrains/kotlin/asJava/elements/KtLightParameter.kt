@@ -100,6 +100,8 @@ class KtLightParameter(
     override fun getParent(): PsiElement = method.parameterList
 
     override fun isEquivalentTo(another: PsiElement?): Boolean {
+        if (kotlinOrigin?.isEquivalentTo(another) == true) return true
+
         val result = ApplicationManager.getApplication().runReadAction(Computable {
             val kotlinOrigin = kotlinOrigin
             if (another is KtLightParameter && kotlinOrigin != null) {
