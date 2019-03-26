@@ -142,11 +142,11 @@ internal class MemberScopeTowerLevel(
                 Variance.INVARIANT -> null
                 Variance.OUT_VARIANCE -> approximator.approximateToSuperType(
                     topLevelType.unwrap(),
-                    TypeApproximatorConfiguration.CapturedAndIntegerLiteralsTypesApproximation
+                    TypeApproximatorConfiguration.CapturedTypesApproximation
                 )
                 Variance.IN_VARIANCE -> approximator.approximateToSubType(
                     topLevelType.unwrap(),
-                    TypeApproximatorConfiguration.CapturedAndIntegerLiteralsTypesApproximation
+                    TypeApproximatorConfiguration.CapturedTypesApproximation
                 )
             } ?: topLevelType
         }

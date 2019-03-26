@@ -17,7 +17,6 @@
 package org.jetbrains.kotlin.types.checker
 
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
-import org.jetbrains.kotlin.resolve.constants.IntegerLiteralTypeConstructor
 import org.jetbrains.kotlin.types.*
 import java.util.*
 import kotlin.collections.LinkedHashSet
@@ -72,14 +71,14 @@ object TypeIntersector {
         assert(types.size > 1) {
             "Size should be at least 2, but it is ${types.size}"
         }
-
         val inputTypes = ArrayList<SimpleType>()
         for (type in types) {
             if (type.constructor is IntersectionTypeConstructor) {
                 inputTypes.addAll(type.constructor.supertypes.map {
                     it.upperIfFlexible().let { if (type.isMarkedNullable) it.makeNullableAsSpecified(true) else it }
                 })
-            } else {
+            }
+            else {
                 inputTypes.add(type)
             }
         }
@@ -107,41 +106,25 @@ object TypeIntersector {
 
         // Any and Nothing should leave
         // Note that duplicates should be dropped because we have Set here.
-        val errorMessage = { "This collections cannot be empty! input types: ${inputTypes.joinToString()}" }
+        val filteredSuperAndEqualTypes = ArrayList(inputTypes)
+        val iterator = filteredSuperAndEqualTypes.iterator()
+        while (iterator.hasNext()) {
+            val upper = iterator.next()
+            val strictSupertypeOrHasEqual = filteredSuperAndEqualTypes.any { lower ->
+                lower !== upper && (isStrictSupertype(lower, upper) || NewKotlinTypeChecker.equalTypes(lower, upper))
+            }
 
-        val filteredEqualTypes = filterTypes(inputTypes, ::isStrictSupertype)
-        assert(filteredEqualTypes.isNotEmpty(), errorMessage)
+            if (strictSupertypeOrHasEqual) iterator.remove()
+        }
 
-        IntegerLiteralTypeConstructor.findIntersectionType(filteredEqualTypes)?.let { return it }
-
-        val filteredSuperAndEqualTypes = filterTypes(filteredEqualTypes, NewKotlinTypeChecker::equalTypes)
-        assert(filteredSuperAndEqualTypes.isNotEmpty(), errorMessage)
+        assert(filteredSuperAndEqualTypes.isNotEmpty()) {
+            "This collections cannot be empty! input types: ${inputTypes.joinToString()}"
+        }
 
         if (filteredSuperAndEqualTypes.size < 2) return filteredSuperAndEqualTypes.single()
 
         val constructor = IntersectionTypeConstructor(inputTypes)
-        return KotlinTypeFactory.simpleTypeWithNonTrivialMemberScope(
-            Annotations.EMPTY,
-            constructor,
-            listOf(),
-            false,
-            constructor.createScopeForKotlinType()
-        )
-    }
-
-    private fun filterTypes(
-        inputTypes: Collection<SimpleType>,
-        predicate: (lower: SimpleType, upper: SimpleType) -> Boolean
-    ): Collection<SimpleType> {
-        val filteredTypes = ArrayList(inputTypes)
-        val iterator = filteredTypes.iterator()
-        while (iterator.hasNext()) {
-            val upper = iterator.next()
-            val shouldFilter = filteredTypes.any { lower -> lower !== upper && predicate(lower, upper) }
-
-            if (shouldFilter) iterator.remove()
-        }
-        return filteredTypes
+        return KotlinTypeFactory.simpleTypeWithNonTrivialMemberScope(Annotations.EMPTY, constructor, listOf(), false, constructor.createScopeForKotlinType())
     }
 
     private fun isStrictSupertype(subtype: KotlinType, supertype: KotlinType): Boolean {
@@ -163,9 +146,9 @@ object TypeIntersector {
         // example: type parameter without not-null supertype
         UNKNOWN {
             override fun combine(nextType: UnwrappedType) =
-                nextType.resultNullability.let {
-                    if (it == ACCEPT_NULL) this else it
-                }
+                    nextType.resultNullability.let {
+                        if (it == ACCEPT_NULL) this else it
+                    }
         },
         NOT_NULL {
             override fun combine(nextType: UnwrappedType) = this

@@ -37,7 +37,6 @@ import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowInfo
 import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowValueFactory
 import org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver
 import org.jetbrains.kotlin.resolve.calls.tower.ResolutionResultCallInfo
-import org.jetbrains.kotlin.resolve.constants.IntegerLiteralTypeConstructor
 import org.jetbrains.kotlin.resolve.constants.IntegerValueTypeConstructor
 import org.jetbrains.kotlin.resolve.scopes.LexicalScope
 import org.jetbrains.kotlin.resolve.scopes.ScopeUtils
@@ -511,8 +510,8 @@ class DelegatedPropertyResolver(
         var delegateDataFlow = delegateTypeInfo.dataFlowInfo
 
         val delegateTypeConstructor = delegateType.constructor
-        if (delegateTypeConstructor is IntegerLiteralTypeConstructor)
-            delegateType = delegateTypeConstructor.getApproximatedType()
+        if (delegateTypeConstructor is IntegerValueTypeConstructor)
+            delegateType = TypeUtils.getDefaultPrimitiveNumberType(delegateTypeConstructor)
 
         if (languageVersionSettings.supportsFeature(LanguageFeature.OperatorProvideDelegate)) {
             val contextForProvideDelegate = createContextForProvideDelegateMethod(

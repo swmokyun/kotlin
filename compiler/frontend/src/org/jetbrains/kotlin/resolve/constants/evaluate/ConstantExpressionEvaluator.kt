@@ -971,12 +971,7 @@ private class ConstantExpressionEvaluatorVisitor(
         }
 
         if (TypeUtils.noExpectedType(expectedType) || expectedType.isError) {
-            return createIntegerValueTypeConstant(
-                value,
-                constantExpressionEvaluator.module,
-                parameters,
-                languageVersionSettings.supportsFeature(LanguageFeature.NewInference)
-            )
+            return createIntegerValueTypeConstant(value, constantExpressionEvaluator.module, parameters)
         }
         val integerValue = ConstantValueFactory.createIntegerConstantValue(
             value, expectedType, parameters.isUnsignedNumberLiteral
