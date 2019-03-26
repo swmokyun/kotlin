@@ -3,6 +3,8 @@ import org.gradle.api.tasks.bundling.Jar
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
+// TODO: make it disabled by default, with a simple way to turn on (`-P`?)
+// TODO: try to enable parallel running tests for compiler build configuration
 //tasks.withType<Test> {
 //    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
 //}

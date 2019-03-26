@@ -2,6 +2,8 @@ import com.moowork.gradle.node.NodeExtension
 import com.moowork.gradle.node.npm.NpmTask
 import org.gradle.internal.os.OperatingSystem
 
+// TODO: make it disabled by default, with a simple way to turn on (`-P`?)
+// TODO: try to enable parallel running tests for compiler build configuration
 //tasks.withType<Test> {
 //    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)
 //}
