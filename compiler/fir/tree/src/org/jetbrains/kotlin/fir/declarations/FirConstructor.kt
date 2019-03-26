@@ -9,9 +9,12 @@ import org.jetbrains.kotlin.fir.BaseTransformedType
 import org.jetbrains.kotlin.fir.VisitedSupertype
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
+import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 
 @BaseTransformedType
 interface FirConstructor : @VisitedSupertype FirFunction, FirCallableMemberDeclaration {
+
+    val isPrimary: Boolean get() = psi is KtPrimaryConstructor
 
     override val isOverride: Boolean get() = status.isOverride
 
